@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 
 myDB(async client => {
   const myDataBase = await client.db('database').collection('users');
-
+  const LocalStrategy = require('passport-local');
   // Default route
   app.route('/').get((req, res) => {
     //The response to render the Pug template
@@ -55,8 +55,23 @@ myDB(async client => {
       done(null, doc._id);
     });
   });
+  // instantiate middleware LocalStrategy
+  /* Defining the process to use when we try to authenticate someone locally. 
+ First, it tries to find a user in the app database with the username entered, then it checks for the password to match, then finally, if no errors have popped up that we checked for, like an incorrect password, the user's object is returned and they are authenticated. */
+  passport.use(new LocalStrategy(
+    function(username, password, done) {
+      myDataBase.findOne({ username: username }, function (err, user) {
+        console.log('User '+ username +' attempted to log in.');
+        if (err) { return done(err); }
+        if (!user) { return done(null, false); }
+        if (password !== user.password) { return done(null, false); }
+        return done(null, user);
+      });
+    }
+  ));
 
-  // Be sure to add this...
+
+// Handle myDB errors
 }).catch(e => {
   app.route('/').get((req, res) => {
     res.render('pug', { title: e, message: 'Unable to login' });
