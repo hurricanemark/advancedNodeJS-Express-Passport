@@ -24,7 +24,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-fccTesting(app); //For FCC testing purposes
+// fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -36,7 +36,7 @@ myDB(async client => {
   // Default route
   app.route('/').get((req, res) => {
     //The response to render the Pug template
-    res.render(process.cwd() + '/views/index', {
+    res.render(process.cwd() + '/views/pug/index', {
       title: 'Connected to Database',
       saywoot: 'There are 86400 seconds in a day, and it goes fast fast fast.',
       message: 'Please login'
